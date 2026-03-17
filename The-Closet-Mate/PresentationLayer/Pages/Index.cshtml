@@ -1,0 +1,25 @@
+﻿@page
+@model PresentationLayer.Pages.IndexModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Home";
+}
+
+<div class="home-bg">
+    <div class="home-content">
+        <h1 class="display-4 text-pink mb-3">Welcome to The Closet Mate</h1>
+        <p class="lead mb-4">
+            Organize your wardrobe. Plan your outfits. Love your closet.
+        </p>
+
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <a href="/Wardrobe" class="btn btn-lg">Go to My Wardrobe</a>
+        }
+        else
+        {
+            <p class="mb-2">Don’t have an account yet?</p>
+            <a href="/Account/Register" class="btn btn-outline-primary btn-lg">Create one</a>
+        }
+    </div>
+</div>

@@ -1,0 +1,66 @@
+@page "{id:int}"
+@model EditOutfitModel
+@{
+    ViewData["Title"] = "Edit Outfit";
+}
+
+<h2 class="text-pink mb-4 text-center">Edit Outfit</h2>
+
+<form method="post">
+    <input type="hidden" asp-for="Outfit.Id" />
+
+    <!-- ✅ This block will show validation error messages like rule violations -->
+    <div asp-validation-summary="All" class="alert alert-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="Outfit.Name" class="form-label">Outfit Name</label>
+        <input asp-for="Outfit.Name" class="form-control" />
+        <span asp-validation-for="Outfit.Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Select Clothing Items:</label>
+        <div class="d-flex flex-wrap gap-3">
+            @foreach (var item in Model.AllClothingItems)
+            {
+                <div class="card shadow-sm" style="width: 120px;">
+                    <div class="card-body text-center p-2">
+                        @if (!string.IsNullOrEmpty(item.ImagePath))
+                        {
+                            <img src="@item.ImagePath" alt="@item.Name" class="img-fluid rounded mb-1" style="height: 80px; object-fit: cover;" />
+                        }
+                        else
+                        {
+                            <div class="bg-light text-muted rounded mb-1 d-flex align-items-center justify-content-center" style="height: 80px; font-size: 0.8rem;">
+                                No Image
+                            </div>
+                        }
+
+                        <input type="checkbox"
+                               name="SelectedClothingItemIds"
+                               value="@item.Id"
+                               id="item-@item.Id"
+                               class="form-check-input"
+                               @(Model.SelectedClothingItemIds.Contains(item.Id) ? "checked" : "") />
+                        <label for="item-@item.Id" class="form-check-label small">@item.Name<br /><span class="text-muted">(@item.Category)</span></label>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="mb-3 mt-4">
+        <label asp-for="ScheduledDate" class="form-label">Scheduled Date</label>
+        <input asp-for="ScheduledDate" type="date" class="form-control" />
+        <span asp-validation-for="ScheduledDate" class="text-danger"></span>
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
+        <button type="submit" class="btn btn-success">Save Changes</button>
+        <a asp-page="/Outfits/MyOutfits" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

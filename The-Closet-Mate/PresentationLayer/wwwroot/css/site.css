@@ -1,0 +1,56 @@
+.home-bg {
+  background-image: url('/images/indexback.webp');
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.home-content {
+  background-color: rgba(255, 255, 255, 0.9); 
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  animation: fadeSlideIn 1.2s ease-out;
+  text-align: center;
+  max-width: 700px;
+}
+
+.text-pink {
+  color: #d63384;
+}
+
+.btn {
+  background-color: #d63384;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+  background-color: #b02a6f;
+  color: white;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Stylish headings */
+h1, h2, h3 {
+  font-family: 'Playfair Display', serif;
+}

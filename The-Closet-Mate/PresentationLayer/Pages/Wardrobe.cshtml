@@ -1,0 +1,175 @@
+@page
+@model PresentationLayer.Pages.WardrobeModel
+@{
+    ViewData["Title"] = "My Wardrobe";
+}
+
+<div class="container my-5">
+    <h2 class="text-center text-pink mb-4">My Wardrobe</h2>
+
+    @if (!string.IsNullOrEmpty(Model.FavoriteMessage))
+    {
+        <div class="alert alert-success text-center">
+            @Model.FavoriteMessage
+        </div>
+    }
+
+   
+    <form method="get" class="mb-4">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <input type="text" name="search" value="@Request.Query["search"]" class="form-control" placeholder="Search by name..." />
+            </div>
+            <div class="col-md-3">
+                <select name="category" class="form-select">
+                    <option value="">All Categories</option>
+                    <option value="Shirts" selected="@("Shirts" == Request.Query["category"])">Shirts</option>
+                    <option value="Pants" selected="@("Pants" == Request.Query["category"])">Pants</option>
+                    <option value="Dresses" selected="@("Dresses" == Request.Query["category"])">Dresses</option>
+                    <option value="Outerwear" selected="@("Outerwear" == Request.Query["category"])">Outerwear</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="season" class="form-select">
+                    
+                    <option value="Summer" selected="@("Summer" == Request.Query["season"])">Summer</option>
+                    <option value="Winter" selected="@("Winter" == Request.Query["season"])">Winter</option>
+                    <option value="Autumn" selected="@("Autumn" == Request.Query["season"])">Autumn</option>
+                    <option value="All Seasons" selected="@("All Seasons" == Request.Query["season"])">All Seasons</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Filter</button>
+            </div>
+        </div>
+    </form>
+
+   
+    <div class="card shadow-sm mb-5">
+        <div class="card-header bg-pink text-white">
+            Add New Clothing Item
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" asp-page-handler="Add">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Name:</label>
+                        <input type="text" asp-for="NewClothingItem.Name" class="form-control" required />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Category:</label>
+                        <select asp-for="NewClothingItem.Category" class="form-select">
+                            <option value="Shirts">Shirts</option>
+                            <option value="Pants">Pants</option>
+                            <option value="Dresses">Dresses</option>
+                            <option value="Outerwear">Outerwear</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Color:</label>
+                        <select asp-for="NewClothingItem.Color" class="form-select">
+                            <option value="Black">Black</option>
+                            <option value="White">White</option>
+                            <option value="Grey">Grey</option>
+                            <option value="Yellow">Yellow</option>
+                            <option value="Red">Red</option>
+                            <option value="Blue">Blue</option>
+                            <option value="Green">Green</option>
+                            <option value="Purple">Purple</option>
+                            <option value="Orange">Orange</option>
+                            <option value="Brown">Brown</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Season:</label>
+                        <select asp-for="NewClothingItem.Season" class="form-select">
+                            <option value="Summer">Summer</option>
+                            <option value="Winter">Winter</option>
+                            <option value="Autumn">Autumn</option>
+                            <option value="All Seasons">All Seasons</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Upload Image (optional):</label>
+                        <input type="file" name="ImageFile" class="form-control" />
+                    </div>
+
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-pink">Add Item</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-3">
+        @foreach (var item in Model.ClothingItems)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm" style="font-size: 0.9rem;">
+                    @if (!string.IsNullOrEmpty(item.ImagePath))
+                    {
+                        <img src="@item.ImagePath" alt="@item.Name"
+                             class="card-img-top"
+                             style="height: 160px; object-fit: contain; cursor: pointer;"
+                             data-bs-toggle="modal" data-bs-target="#imageModal"
+                             onclick="showImageModal('@item.ImagePath')" />
+                    }
+                    else
+                    {
+                        <div class="d-flex align-items-center justify-content-center bg-light"
+                             style="height: 160px; font-size: 0.8rem;">
+                            <span class="text-muted">No image</span>
+                        </div>
+                    }
+
+                    <div class="card-body p-2">
+                        <h6 class="card-title mb-1">@item.Name</h6>
+                        <p class="mb-2">
+                            <small><strong>Category:</strong> @item.Category<br />
+                            <strong>Color:</strong> @item.Color<br />
+                            <strong>Season:</strong> @item.Season</small>
+                        </p>
+                    </div>
+                    <div class="card-footer p-2 bg-transparent border-top-0 d-flex flex-column gap-1">
+                        <form method="post" asp-page-handler="Favorite" asp-route-id="@item.Id" class="d-inline">
+                            <button type="submit" class="btn btn-outline-pink btn-sm w-100">
+                                @(item.IsFavorite ? "Remove Favorite" : "Add to Favorites")
+                            </button>
+                        </form>
+                        <form method="post" asp-page-handler="Delete" class="d-inline">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit" class="btn btn-danger btn-sm w-100">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content bg-white">
+      <div class="modal-body text-center p-0">
+        <img id="modalImage" src="" alt="Clothing Item" class="img-fluid rounded" />
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+    <script>
+        function showImageModal(imageUrl) {
+            document.getElementById('modalImage').src = imageUrl;
+        }
+    </script>
+}

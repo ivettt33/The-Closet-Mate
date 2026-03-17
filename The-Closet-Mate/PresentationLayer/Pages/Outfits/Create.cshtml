@@ -1,0 +1,50 @@
+@page
+@model PresentationLayer.Pages.Outfits.CreateModel
+@{
+    ViewData["Title"] = "Create Outfit";
+}
+
+<div class="container my-5">
+    <h2 class="text-pink text-center mb-4">Create a New Outfit</h2>
+
+    <form method="post">
+        <div asp-validation-summary="All" class="alert alert-danger"></div>
+
+        <div class="mb-3">
+            <label asp-for="OutfitName" class="form-label">Outfit Name</label>
+            <input asp-for="OutfitName" class="form-control" />
+            <span asp-validation-for="OutfitName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Select Clothing Items</label>
+            @foreach (var item in Model.AvailableItems)
+            {
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" name="SelectedItemIds" value="@item.Id" id="item-@item.Id" />
+                    <label class="form-check-label" for="item-@item.Id">
+                        <strong>@item.Name</strong> (@item.Category, @item.Color)
+                        <br />
+                        @if (!string.IsNullOrEmpty(item.ImagePath))
+                        {
+                            <img src="@item.ImagePath" alt="@item.Name"
+                                 style="height: 80px; object-fit: contain; margin-top: 5px;" />
+                        }
+                    </label>
+                </div>
+            }
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ScheduledDate" class="form-label">Optional: Schedule This Outfit</label>
+            <input asp-for="ScheduledDate" type="date" class="form-control" />
+            <span asp-validation-for="ScheduledDate" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-pink">Save Outfit</button>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,81 @@
+@page
+@model PresentationLayer.Pages.PlannerModel
+@{
+    ViewData["Title"] = "Outfit Planner";
+}
+
+<h2 class="text-center text-pink mb-4">Outfit Planner</h2>
+
+<div id="calendar"></div>
+
+<!-- 🪄 Bootstrap Modal -->
+<div class="modal fade" id="outfitModal" tabindex="-1" aria-labelledby="outfitModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="outfitModalLabel">Outfit Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="outfitModalBody">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/main.min.css" rel="stylesheet" />
+    <style>
+        #calendar {
+            max-width: 900px;
+            height: 600px;
+            margin: 0 auto;
+            padding: 1rem;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/index.global.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var calendarEl = document.getElementById('calendar');
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                height: 'auto',
+                events: @Html.Raw(Json.Serialize(Model.ScheduledOutfits)),
+
+                eventClick: function (info) {
+                    const outfitName = info.event.title;
+                    const items = info.event.extendedProps.items || [];
+
+                    let html = '<div class="d-flex flex-wrap gap-3">';
+                    if (items.length === 0) {
+                        html += '<p>No items in this outfit.</p>';
+                    } else {
+                        items.forEach(item => {
+                            html += `
+                                <div class="text-center">
+                                    ${item.imagePath
+                                        ? `<img src="${item.imagePath}" class="img-fluid rounded mb-1" style="height:100px; object-fit:contain;" />`
+                                        : `<div class="bg-light text-muted d-flex align-items-center justify-content-center rounded" style="height:100px; width:100px;">No Image</div>`}
+                                    <p class="small mt-1">${item.name}</p>
+                                </div>`;
+                        });
+                    }
+                    html += '</div>';
+
+                    document.getElementById('outfitModalLabel').innerText = outfitName;
+                    document.getElementById('outfitModalBody').innerHTML = html;
+                    new bootstrap.Modal(document.getElementById('outfitModal')).show();
+                }
+            });
+
+            calendar.render();
+        });
+    </script>
+}
